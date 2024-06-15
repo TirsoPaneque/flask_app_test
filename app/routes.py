@@ -4,6 +4,7 @@ import numpy as np
 import requests
 import atexit
 import shutil
+from model import *
 
 API_KEY = '00f95217d3b04a0c9e1af341b4e1608a'
 current_csv_path = './data/updated_beaches.csv'
