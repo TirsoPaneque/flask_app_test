@@ -58,46 +58,47 @@ def index():
 def calculate_route():
     # This is going to be our main function where all the magic is gonna happen
 
-    # # This first few lines are gonna read the input from the user
+    # This first few lines are gonna read the input from the user
     data = request.json
     address = data.get('address')
     county = data.get('county')
 
-    # if not address or not county:
-    #     return jsonify({'error': 'Address, and county are required.'}), 400
+    if not address or not county:
+        return jsonify({'error': 'Address, and county are required.'}), 40
+    
+    # This lines are gonna give us the location of the user
+    starting_location = get_coordinates(address, county)
+    if starting_location == (None, None):
+        return jsonify({'error': 'Invalid starting location'}), 40
+    
+    # Now we move on to data preprocessing
+    df = pd.read_csv(current_csv_path)
+    starting_location_list = [county, 'Starting Location', starting_location[0], starting_location[1]]
+    df.loc[len(df.index)] = starting_location_list
+    distances = []
+    for index, beach in df.iterrows():
+        if beach['NAME'] != 'Starting Location':
+            dist = manhattan_distance(starting_location[0], starting_location[1], beach['latitude'], beach['longitude'])
+            distances.append({'beach': beach['NAME'], 'distance': dist})
 
-    # # This lines are gonna give us the location of the user
-    # starting_location = get_coordinates(address, county)
-    # if starting_location == (None, None):
-    #     return jsonify({'error': 'Invalid starting location'}), 400
+    # This next few lines are gonna collect us the distances and save them along with the beaches names
+    distances.sort(key=lambda x: x['distance'])
+    closest_beaches = []
+    for b in range(9):
+        closest_beaches.append(distances[b]['beach'])
+
+    closest_distances = []
+    for d in range(9):
+        closest_distances.append(distances[d]['distance'])
 
 
-    # # Now we move on to data preprocessing
-    # df = pd.read_csv(current_csv_path)
+    return jsonify({
+        'closest_beaches': closest_beaches,
+        'distance': closest_distances
+    })
 
-    # starting_location_list = [county, 'Starting Location', starting_location[0], starting_location[1]]
-    # df.loc[len(df.index)] = starting_location_list
-
-    # distances = []
-    # for index, beach in df.iterrows():
-    #     if beach['NAME'] != 'Starting Location':
-    #         dist = manhattan_distance(starting_location[0], starting_location[1], beach['latitude'], beach['longitude'])
-    #         distances.append({'beach': beach['NAME'], 'distance': dist})
-
-    # distances.sort(key=lambda x: x['distance'])
-
-    # closest_beaches = distances[:9]
-    # for beach in closest_beaches:
-    #     df = df[~((df['latitude'] == beach['latitude']) & (df['longitude'] == beach['longitude']))]
-
-    # return jsonify({
-    #     'closest_beaches': closest_beaches,
-    #     'distance': closest_beaches['distance'],
-    #     'distances': distances
-    # })
-
-    return jsonify({"county": 'Mirabel condao',
-                    'address': address})
+    # return jsonify({"county": 'Mirabel condao',
+    #                 'address': address})
 
 
 if __name__ == '__main__':
