@@ -76,26 +76,30 @@ def calculate_route():
     df = pd.read_csv(current_csv_path)
     starting_location_list = [county, 'Starting Location', starting_location[0], starting_location[1]]
     df.loc[len(df.index)] = starting_location_list
-    distances = []
-    for index, beach in df.iterrows():
-        if beach['NAME'] != 'Starting Location':
-            dist = manhattan_distance(starting_location[0], starting_location[1], beach['latitude'], beach['longitude'])
-            distances.append({'beach': beach['NAME'], 'distance': dist})
+
+    # distances = []
+    # for index, beach in df.iterrows():
+    #     if beach['NAME'] != 'Starting Location':
+    #         dist = manhattan_distance(starting_location[0], starting_location[1], beach['latitude'], beach['longitude'])
+    #         distances.append({'beach': beach['NAME'], 'distance': dist})
 
     # This next few lines are gonna collect us the distances and save them along with the beaches names
-    distances.sort(key=lambda x: x['distance'])
-    closest_beaches = []
-    for b in range(9):
-        closest_beaches.append(distances[b]['beach'])
+    # distances.sort(key=lambda x: x['distance'])
+    # closest_beaches = []
+    # for b in range(9):
+    #     closest_beaches.append(distances[b]['beach'])
 
-    closest_distances = []
-    for d in range(9):
-        closest_distances.append(distances[d]['distance'])
+    # closest_distances = []
+    # for d in range(9):
+    #     closest_distances.append(distances[d]['distance'])
+
+    closest_beaches, closest_distances, total_distance = calculate_closest_route(df, starting_location)
 
 
     return jsonify({
         'closest_beaches': closest_beaches,
-        'distance': closest_distances
+        'distance': closest_distances,
+        'total_distance': total_distance
     })
 
     # return jsonify({"county": 'Mirabel condao',

@@ -16,6 +16,10 @@ function submitForm() {
                     return `${index + 1}. ${beach} (${response.distance[index]} km)`;
                 });
                 alert("Closest Beaches:\n" + beachesInfo.join('\n'));
+                
+                // Display total distance
+                alert("Total Distance: " + response.total_distance);
+
             } else {
                 alert("Error: " + xhr.status);
             }
