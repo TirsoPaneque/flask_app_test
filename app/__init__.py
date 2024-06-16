@@ -6,7 +6,7 @@ def create_app():
 
     with app.app_context():
         CORS(app)
-        from .routes import main
-        app.register_blueprint(main)
+        from . import main
+        app.register_blueprint(main.bp)
 
         return app
